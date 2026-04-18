@@ -1,0 +1,20 @@
+{
+  "name": "NeoChat Backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "clear && node server.js"
+  },
+  "keywords": [
+    "backend",
+    "server"
+  ],
+  "author": "Neon",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}

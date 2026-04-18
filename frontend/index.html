@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Neo Chat is a chatting platform where you can socialize Anywhere, Anytime with any device">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <title>NeoChat</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      #general
+    </div>
+
+    <div class="chat-box">
+      <div class="system message">
+        Server: Welcome To Chat!
+      </div>
+      <div class="system message">
+        Tip: Markdown is supported
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <textarea placeholder="Type a message..."></textarea>
+      <button>
+        <img src="images/send.png" alt="send icon" title="Send">
+      </button>
+    </div>
+  </div>
+  <div class="popup">
+    <div class="popup-content">
+      <h1>Title</h1>
+      <p>Description</p>
+
+      <div class="popup-actions">
+        <button id="cancel">Cancel</button>
+        <a target="_blank">Continue</a>
+      </div>
+    </div>
+  </div>
+  <!-- Socket.io -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- External JS -->
+  <script src="app.js"></script>
+</body>
+</html>

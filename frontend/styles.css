@@ -1,0 +1,196 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+  height: 100%;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: #f4f4f4;
+}
+
+.chat-header {
+  background: #2e60ff;
+  color: white;
+  padding: 15px;
+  font-size: 18px;
+}
+
+.chat-box {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.message {
+  margin: 10px 0;
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.sent {
+  background: #ddd;
+  color: black;
+}
+
+.received {
+  background: #ddd;
+  margin-left: auto;
+}
+
+a {
+  text-decoration: none;
+  color: #414141;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.system {
+  font-weight: 500;
+  color: white;
+  background: #003af1;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  background: white;
+  border-top: 1px solid #ccc;
+}
+
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  outline: none;
+}
+
+.chat-input button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  border: none;
+  border-radius: 100%;
+  background: #2f2f2f;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+}
+
+/* Overlay background */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: none;
+
+  justify-content: center;
+  align-items: center;
+
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+/* Show popup */
+.popup.active {
+  display: flex;
+}
+
+/* Popup box */
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  animation: popupFade 0.2s ease;
+}
+
+/* Text styles */
+.popup-content h1 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.popup-content p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.popup-actions button,
+.popup-actions a {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+/* Cancel button */
+.popup-actions button {
+  background: #ddd;
+}
+
+.popup-actions button:hover {
+  color: white;
+  transform: scale(1.1);
+  background: #ff2d2d;
+}
+
+.popup-actions a:hover {
+  transform: scale(1.1);
+}
+
+/* Confirm link */
+.popup-actions a {
+  background: #2e60ff;
+  color: white;
+}
+
+/* Animation */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
