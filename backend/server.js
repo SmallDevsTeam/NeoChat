@@ -34,6 +34,14 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
+app.get("/email", (req, res) => {
+  res.send('support@neocode.work')
+});
+
+// ---------------
+//   Functions   
+// ---------------
+
 // Escape regex helper
 function escapeRegex(word) {
   return word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

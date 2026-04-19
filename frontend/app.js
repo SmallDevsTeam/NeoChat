@@ -9,7 +9,7 @@ const cancelBtn = document.querySelector("#cancel");
 // Input styling
 input.addEventListener('input', (e) => {
   const content = e.target.value.replace(/\s/g, "");
-  button.style.backgroundColor = content.length > 0 ? "#2e60ff" : "#2f2f2f";
+  button.style.backgroundColor = content.length > 0 ? "#2e60ff" : "#131419";
 });
 
 cancelBtn.addEventListener("click", () => {
@@ -39,23 +39,57 @@ document.addEventListener("click", (e) => {
 });
 
 function formatMessage(text) {
-  return text
+  const codeBlocks = [];
+
+  // 1. Extract code blocks first (with optional language)
+  text = text.replace(/```(\w+)?([\s\S]*?)```/g, (match, lang, code) => {
+    const id = codeBlocks.length;
+
+    codeBlocks.push({
+      code,
+      lang: lang || ""
+    });
+
+    return `@@CODEBLOCK_${id}@@`;
+  });
+
+  // 2. Escape HTML (only if you need safety here)
+  text = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // 3. Inline formatting
+  text = text
     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
     .replace(/\*(.*?)\*/g, "<i>$1</i>")
     .replace(/__(.*?)__/g, "<u>$1</u>")
     .replace(/~~(.*?)~~/g, "<s>$1</s>")
-    .replace(/`(.*?)`/g, "<code>$1</code>")
-    .replace(/^#\s+(.*)$/gm, "<h1>$1</h1>")
-    .replace(/^##\s+(.*)$/gm, "<h2>$1</h2>")
-    .replace(/^###\s+(.*)$/gm, "<h3>$1</h3>");
-}
+    .replace(/`([^`]+)`/g, "<code class='inline-code'>$1</code>")
+    .replace(/\n/g, "<br>");
+
+  // 4. Restore code blocks
+  codeBlocks.forEach((block, i) => {
+    const escaped = block.code
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    text = text.replace(
+      `@@CODEBLOCK_${i}@@`,
+      `<pre><code class="language-${block.lang}">${escaped}</code></pre>`
+    );
+  });
+
+  return text;
+};
 
 function formatURL(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, (url) => {
     return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
   });
-}
+};
 
 function handleMessage(msg, type) {
   const div = document.createElement("div");
@@ -65,10 +99,35 @@ function handleMessage(msg, type) {
   result = formatURL(result);
 
   div.innerHTML = result;
-
   chatBox.appendChild(div);
+
+  // Highlight + copy buttons
+  div.querySelectorAll("pre code").forEach((block) => {
+    hljs.highlightElement(block);
+
+    const pre = block.parentElement;
+
+    // avoid duplicate buttons
+    if (pre.querySelector(".copy-btn")) return;
+
+    const btn = document.createElement("button");
+    btn.classList.add("copy-btn");
+    btn.innerHTML = `<img src="public/copy.svg" alt="copy">`;
+
+    btn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(block.innerText);
+
+      btn.textContent = "Copied!";
+      setTimeout(() => {
+        btn.innerHTML = `<img src="public/copy.svg" alt="copy">`;
+      }, 1200);
+    });
+
+    pre.appendChild(btn);
+  });
+
   chatBox.scrollTop = chatBox.scrollHeight;
-}
+};
 
 socket.on("chat message", (msg) => {
   handleMessage(msg, "sent");
@@ -86,7 +145,7 @@ button.addEventListener("click", () => {
   const msg = input.value;
 
   if (msg.trim() !== "") {
-    button.style.backgroundColor = "#2f2f2f";
+    button.style.backgroundColor = "#131419";
     socket.emit("chat message", msg);
     input.value = "";
     handleMessage(msg, "received");

@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -15,78 +15,130 @@ body, html {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background: #f4f4f4;
+  background: black;
 }
 
 .chat-header {
-  background: #2e60ff;
+  background: black;
   color: white;
+  font-weight: 500;
+  border-bottom: 1px solid #171617;
   padding: 15px;
   font-size: 18px;
 }
 
 .chat-box {
   flex: 1;
-  padding: 15px;
   overflow-y: auto;
 }
 
 .message {
-  margin: 10px 0;
-  max-width: 70%;
+  max-width: 100%;
   padding: 10px;
-  border-radius: 10px;
+  color: white;
 }
 
-.sent {
-  background: #ddd;
-  color: black;
+.sent,.received {
+  background: black;
+  white-space: pre-wrap;
 }
 
 .received {
-  background: #ddd;
   margin-left: auto;
 }
 
 a {
   text-decoration: none;
-  color: #414141;
+  color: #07A7F3;
 }
 
 a:hover {
   text-decoration: underline;
 }
 
+span {
+  color: #000000;
+  opacity: 0.45;
+  font-size: 13px;
+}
+
+pre {
+  position: relative;
+}
+
+pre .copy-btn {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 8px;
+  color: white;
+  right: 8px;
+  background: transparent;
+  border: none;
+  width: 30px;
+  height: 30px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+pre .copy-btn:hover {
+  opacity: 0.7;
+}
+
+pre code {
+  font-family: "Fira Code", monospace;
+  font-size: 13px;
+}
+
+/*Override Hljs*/
+.hljs {
+  border-radius: 10px;
+}
+
+.inline-code {
+  background: #141318;
+}
+
 .system {
   font-weight: 500;
   color: white;
-  background: #003af1;
+  background: #11124B;
 }
 
 .chat-input {
   display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
-  background: white;
-  border-top: 1px solid #ccc;
+  background: black;
+  border-top: 1px solid #171617;
 }
 
 .chat-input textarea {
   flex: 1;
+  color: white;
+  height: 40px;
+  background: #131419;
+  text-align: left;
+  font-size: 15px;
   resize: none;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  border: 2px solid #171617;
+  border-radius: 100px;
   outline: none;
 }
 
 .chat-input button {
   display: flex;
+  transition: all 0.15s ease;
   justify-content: center;
   align-items: center;
   margin-left: 10px;
   border: none;
   border-radius: 100%;
-  background: #2f2f2f;
+  background: #131419;
   cursor: pointer;
   width: 50px;
   height: 50px;
@@ -118,7 +170,7 @@ a:hover {
 
 /* Popup box */
 .popup-content {
-  background: white;
+  background: #222222;
   padding: 20px;
   border-radius: 15px;
   width: 90%;
@@ -132,6 +184,7 @@ a:hover {
 
 /* Text styles */
 .popup-content h1 {
+  color: white;
   font-size: 20px;
   margin-bottom: 10px;
 }
