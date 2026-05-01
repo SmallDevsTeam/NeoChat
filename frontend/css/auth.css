@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+body, html {
+  display: flex;
+  color: white;
+  background: #333333;
+}
+
+.register {
+  display: flex;
+  right: 0;
+  height: 100vh;
+  min-width: 30vw;
+  max-width: 50vw;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 5px;
+  background: #000000;
+}
+
+.register h3 {
+  font-size: 14px;
+  color: #555;
+}
+
+.register input {
+  margin: 10px;
+  border-radius: 0;
+}

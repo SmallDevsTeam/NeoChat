@@ -16,6 +16,10 @@ const io = new Server(server);
 
 const rateLimit = new Map();
 
+const API_KEY = process.env.API_KEY;
+const FILE_PATH = "./data.json";
+const PORT = process.env.PORT || 3000;
+
 // Load filter words
 const filter = JSON.parse(fs.readFileSync("filter.json", "utf-8"));
 
@@ -30,12 +34,32 @@ try {
 // Serve static files
 app.use(express.static(path.join(__dirname, "../frontend/")));
 
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "../frontend/pages/error/404.html"));
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 app.get("/email", (req, res) => {
   res.send('support@neocode.work')
+});
+
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/pages/register.html"));
+});
+
+app.post("/reset", async (req, res) => {
+  const key = req.headers["x-api-key"];
+
+  if (!key || key !== API_KEY) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  await fs.promises.writeFile(FILE_PATH, JSON.stringify([], null, 2));
+
+  res.json({ success: true });
 });
 
 // ---------------
@@ -119,10 +143,10 @@ function formatUptime(seconds = process.uptime()) {
 };
 
 // Start server
-server.listen(3000, () => {
+server.listen(PORT, () => {
   console.log("[SYSTEM]: Server running on port 3000");
-  console.log("[SYSTEM]: Server Startup time",
-    process.uptime());
+  console.log("[SYSTEM]: Server Startup time",process.uptime());
+  console.log("[SYSTEM]: PID:", process.pid)
   console.log("=".repeat(30))
 
   setInterval(() => {
@@ -139,5 +163,15 @@ server.listen(3000, () => {
 
       // cleanup here
       process.exit(0);
+    });
+  process.on("SIGTERM",
+    () => {
+      console.log("=".repeat(30));
+      console.log("[SYSTEM]: Closing Server");
+      console.log("[SYSTEM]: Server Uptime:", formatUptime());
+      console.log("=".repeat(30));
+
+      // cleanup here
+      server.close(() => process.exit(0));
     });
 });

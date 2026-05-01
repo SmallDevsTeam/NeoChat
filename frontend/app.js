@@ -1,4 +1,5 @@
 const socket = io();
+let username = prompt("What is your name?");
 
 const input = document.querySelector("textarea");
 const button = document.querySelector("button");
@@ -41,48 +42,54 @@ document.addEventListener("click", (e) => {
 function formatMessage(text) {
   const codeBlocks = [];
 
-  // 1. Extract code blocks first (with optional language)
-  text = text.replace(/```(\w+)?([\s\S]*?)```/g, (match, lang, code) => {
+  // 1. Extract code blocks
+  text = text.replace(/```([\s\S]*?)```/g, (match, code) => {
     const id = codeBlocks.length;
-
-    codeBlocks.push({
-      code,
-      lang: lang || ""
-    });
-
+    codeBlocks.push(code);
     return `@@CODEBLOCK_${id}@@`;
   });
 
-  // 2. Escape HTML (only if you need safety here)
+  // 2. Escape HTML
   text = text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-  // 3. Inline formatting
+  // 3. Formatting
   text = text
+    // custom span FIRST
+    .replace(/^-#\s+(.+)$/gm, "<span class='subtext'>$1</span>")
+
+    // headings (ORDER MATTERS)
+    .replace(/^###\s+(.+)$/gm, "<h3>$1</h3>")
+    .replace(/^##\s+(.+)$/gm, "<h2>$1</h2>")
+    .replace(/^#\s+(.+)$/gm, "<h1>$1</h1>")
+
+    // markdown
     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
     .replace(/\*(.*?)\*/g, "<i>$1</i>")
     .replace(/__(.*?)__/g, "<u>$1</u>")
     .replace(/~~(.*?)~~/g, "<s>$1</s>")
-    .replace(/`([^`]+)`/g, "<code class='inline-code'>$1</code>")
+    .replace(/`([^`\n]+)`/g, "<code class='inline-code'>$1</code>")
+
+    // line breaks
     .replace(/\n/g, "<br>");
 
-  // 4. Restore code blocks
-  codeBlocks.forEach((block, i) => {
-    const escaped = block.code
+  // 4. Restore code blocks (raw)
+  codeBlocks.forEach((code, i) => {
+    const escaped = code
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
     text = text.replace(
       `@@CODEBLOCK_${i}@@`,
-      `<pre><code class="language-${block.lang}">${escaped}</code></pre>`
+      `<pre><code>${escaped}</code></pre>`
     );
   });
 
   return text;
-};
+}
 
 function formatURL(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -146,8 +153,8 @@ button.addEventListener("click", () => {
 
   if (msg.trim() !== "") {
     button.style.backgroundColor = "#131419";
-    socket.emit("chat message", msg);
+    socket.emit("chat message", `${username}: ${msg}`);
     input.value = "";
-    handleMessage(msg, "received");
+    handleMessage(`${username}: ${msg}`, "received");
   }
 });
