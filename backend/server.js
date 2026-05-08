@@ -4,6 +4,7 @@ console.log("[SYSTEM]: Starting Server")
 
 const express = require("express");
 const http = require("http");
+const DOMPurify = require('isomorphic-dompurify');
 const {
   Server
 } = require("socket.io");
@@ -86,12 +87,6 @@ function censorSwears(msg, swearList) {
   return content;
 }
 
-// Delete XML injections
-function hasUnsafeProtocol(text) {
-  const unsafe = /\b(javascript:|data:|file:|ftp:|mailto:|tel:)/gi;
-  return unsafe.test(text);
-}
-
 // Socket.IO
 io.on("connection", (socket) => {
   console.log("[SYSTEM]: User connected");
@@ -100,10 +95,7 @@ io.on("connection", (socket) => {
   socket.emit("chat data", data);
 
   socket.on("chat message", (msg) => {
-    if (hasUnsafeProtocol(msg)) {
-      socket.emit('denied', 'your Message Contains malicious code.')
-      return;
-    }
+    msg = DOMPurify.sanitize(msg);
     const now = Date.now();
     const last = rateLimit.get(socket.id) || 0;
 
