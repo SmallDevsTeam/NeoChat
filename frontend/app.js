@@ -93,10 +93,49 @@ function formatMessage(text) {
 
 function formatURL(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
+
   return text.replace(urlRegex, (url) => {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    try {
+      const parsed = new URL(url);
+
+      if (!["http:", "https:"].includes(parsed.protocol)) {
+        return url;
+      }
+
+      const isTenor =
+        parsed.hostname.includes("tenor.com") ||
+        parsed.hostname.includes("media.tenor.com");
+
+      if (isTenor) {
+        const id = extractTenorId(parsed.href);
+        const i = document.createElement('iframe');
+        i.src = `https://tenor.com/embed/${id}`
+        chatBox.appendChild(i)
+      }
+
+      const a = document.createElement("a");
+
+      a.href = parsed.href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = parsed.href;
+
+      return a.outerHTML;
+    } catch {
+      return url;
+    }
   });
 };
+
+// Extract enor Id for Iframe
+function extractTenorId(url) {
+  try {
+    const match = url.match(/-([0-9]+)$/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
 
 function handleMessage(msg, type) {
   const div = document.createElement("div");
@@ -137,11 +176,11 @@ function handleMessage(msg, type) {
 };
 
 socket.on("chat message", (msg) => {
-  handleMessage(msg, "sent");
+  handleMessage(DOMPurify.sanitize(msg), "sent");
 });
 
 socket.on("chat data", (data) => {
-  data.forEach(msg => handleMessage(msg, "sent"));
+  data.forEach(msg => handleMessage(DOMPurify.sanitize(msg), "sent"));
 });
 
 socket.on('denied', (error) => {
