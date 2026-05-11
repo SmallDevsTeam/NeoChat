@@ -7,10 +7,15 @@ const chatBox = document.querySelector(".chat-box");
 const popup = document.querySelector('.popup');
 const cancelBtn = document.querySelector("#cancel");
 
+// User Devive
+const isMobile =
+  window.matchMedia("(max-width: 768px)").matches &&
+  ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
 // Input styling
 input.addEventListener('input', (e) => {
   const content = e.target.value.replace(/\s/g, "");
-  button.style.backgroundColor = content.length > 0 ? "#2e60ff" : "#131419";
+  button.style.backgroundColor = content.length > 0 ? "#2e60ff": "#131419";
 });
 
 cancelBtn.addEventListener("click", () => {
@@ -23,8 +28,8 @@ popup.addEventListener("click", (e) => {
   }
 });
 
-popup.querySelector('a').addEventListener('click',(e) => {
-    window.location.href = e.target.href;
+popup.querySelector('a').addEventListener('click', (e) => {
+  window.location.href = e.target.href;
 });
 
 // Handle link clicks
@@ -43,44 +48,58 @@ function formatMessage(text) {
   const codeBlocks = [];
 
   // 1. Extract code blocks
-  text = text.replace(/```([\s\S]*?)```/g, (match, code) => {
-    const id = codeBlocks.length;
-    codeBlocks.push(code);
-    return `@@CODEBLOCK_${id}@@`;
-  });
+  text = text.replace(/```([\s\S]*?)```/g,
+    (match, code) => {
+      const id = codeBlocks.length;
+      codeBlocks.push(code);
+      return `@@CODEBLOCK_${id}@@`;
+    });
 
   // 2. Escape HTML
   text = text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  .replace(/&/g,
+    "&amp;")
+  .replace(/</g,
+    "&lt;")
+  .replace(/>/g,
+    "&gt;");
 
   // 3. Formatting
   text = text
-    // custom span FIRST
-    .replace(/^-#\s+(.+)$/gm, "<span class='subtext'>$1</span>")
+  // custom span FIRST
+  .replace(/^-#\s+(.+)$/gm,
+    "<span class='subtext'>$1</span>")
 
-    // headings (ORDER MATTERS)
-    .replace(/^###\s+(.+)$/gm, "<h3>$1</h3>")
-    .replace(/^##\s+(.+)$/gm, "<h2>$1</h2>")
-    .replace(/^#\s+(.+)$/gm, "<h1>$1</h1>")
+  // headings (ORDER MATTERS)
+  .replace(/^###\s+(.+)$/gm,
+    "<h3>$1</h3>")
+  .replace(/^##\s+(.+)$/gm,
+    "<h2>$1</h2>")
+  .replace(/^#\s+(.+)$/gm,
+    "<h1>$1</h1>")
 
-    // markdown
-    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-    .replace(/\*(.*?)\*/g, "<i>$1</i>")
-    .replace(/__(.*?)__/g, "<u>$1</u>")
-    .replace(/~~(.*?)~~/g, "<s>$1</s>")
-    .replace(/`([^`\n]+)`/g, "<code class='inline-code'>$1</code>")
+  // markdown
+  .replace(/\*\*(.*?)\*\*/g,
+    "<b>$1</b>")
+  .replace(/\*(.*?)\*/g,
+    "<i>$1</i>")
+  .replace(/__(.*?)__/g,
+    "<u>$1</u>")
+  .replace(/~~(.*?)~~/g,
+    "<s>$1</s>")
+  .replace(/`([^`\n]+)`/g,
+    "<code class='inline-code'>$1</code>")
 
-    // line breaks
-    .replace(/\n/g, "<br>");
+  // line breaks
+  .replace(/\n/g,
+    "<br>");
 
   // 4. Restore code blocks (raw)
   codeBlocks.forEach((code, i) => {
     const escaped = code
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
     text = text.replace(
       `@@CODEBLOCK_${i}@@`,
@@ -94,44 +113,45 @@ function formatMessage(text) {
 function formatURL(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-  return text.replace(urlRegex, (url) => {
-    try {
-      const parsed = new URL(url);
+  return text.replace(urlRegex,
+    (url) => {
+      try {
+        const parsed = new URL(url);
 
-      if (!["http:", "https:"].includes(parsed.protocol)) {
-        return url;
-      }
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          return url;
+        }
 
-      const isTenor =
+        const isTenor =
         parsed.hostname.includes("tenor.com") ||
         parsed.hostname.includes("media.tenor.com");
 
-      if (isTenor) {
-        const id = extractTenorId(parsed.href);
-        const i = document.createElement('iframe');
-        i.src = `https://tenor.com/embed/${id}`
-        chatBox.appendChild(i)
+        if (isTenor) {
+          const id = extractTenorId(parsed.href);
+          const i = document.createElement('iframe');
+          i.src = `https://tenor.com/embed/${id}`
+          chatBox.appendChild(i)
+        }
+
+        const a = document.createElement("a");
+
+        a.href = parsed.href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = parsed.href;
+
+        return a.outerHTML;
+      } catch {
+        return url;
       }
-
-      const a = document.createElement("a");
-
-      a.href = parsed.href;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = parsed.href;
-
-      return a.outerHTML;
-    } catch {
-      return url;
-    }
-  });
+    });
 };
 
 // Extract enor Id for Iframe
 function extractTenorId(url) {
   try {
     const match = url.match(/-([0-9]+)$/);
-    return match ? match[1] : null;
+    return match ? match[1]: null;
   } catch {
     return null;
   }
@@ -139,7 +159,8 @@ function extractTenorId(url) {
 
 function handleMessage(msg, type) {
   const div = document.createElement("div");
-  div.classList.add("message", type);
+  div.classList.add("message",
+    type);
 
   let result = formatMessage(msg);
   result = formatURL(result);
@@ -185,6 +206,21 @@ socket.on("chat data", (data) => {
 
 socket.on('denied', (error) => {
   alert('your message failed!');
+});
+
+document.addEventListener("keydown", (event) => {
+  if (document.activeElement === input) {
+    if (event.key === "Enter" && !isMobile) {
+      const msg = input.value;
+
+      if (msg.trim() !== "") {
+        button.style.backgroundColor = "#131419";
+        socket.emit("chat message", `${username}: ${msg}`);
+        input.value = "";
+        handleMessage(`${username}: ${msg}`, "received");
+      }
+    }
+  }
 });
 
 button.addEventListener("click", () => {
