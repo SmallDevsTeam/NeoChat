@@ -36,15 +36,13 @@ body, html {
   max-width: 100%;
   padding: 10px;
   color: white;
+  inline-size: 100vw;
+  overflow-wrap: break-word;
 }
 
 .sent,.received {
   background: black;
   white-space: pre-wrap;
-}
-
-.received {
-  margin-left: auto;
 }
 
 a {
@@ -175,7 +173,8 @@ pre code {
   border-radius: 15px;
   width: 90%;
   max-width: 400px;
-
+  inline-size: 100vw;
+  overflow-wrap: break-word;
   text-align: left;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
